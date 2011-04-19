@@ -1,0 +1,6 @@
+Textures/Skybox/pos_x.tga
+Textures/Skybox/neg_x.tga
+Textures/Skybox/pos_y.tga
+Textures/Skybox/neg_y.tga
+Textures/Skybox/pos_z.tga
+Textures/Skybox/neg_z.tga
