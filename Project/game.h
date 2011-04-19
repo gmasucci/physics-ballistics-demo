@@ -11,6 +11,7 @@
 #include <GLMatrixStack.h>
 #include <GLShaderManager.h>
 #include <GLGeometryTransform.h>
+#include <GLBatch.h>
 #include "GameModel.h"
 #include "skybox.h"
 #include "bass.h"
@@ -75,6 +76,11 @@ private:
 	void placeThem();
 public:
 	vector<unsigned int> textures;
+private:
+	void drawFloor();
+	void initFloor();
+	GLBatch floorBatch;
+
 
 };
 

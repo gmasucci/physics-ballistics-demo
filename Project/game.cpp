@@ -10,6 +10,40 @@ Game::Game()
 	//m_scale = 20.0f;
 }
 
+void Game::initFloor()
+{
+	GLfloat x = 5.0f;
+    GLfloat y = -1.0f;
+
+	floorBatch.Begin(GL_TRIANGLE_FAN, 4, 1);
+		floorBatch.MultiTexCoord2f(0, 0.0f, 0.0f);
+		floorBatch.Vertex3f(-100, 0, 100);
+
+		floorBatch.MultiTexCoord2f(0, 1.0f, 0.0f);
+		floorBatch.Vertex3f(100, 0, 100);
+
+		floorBatch.MultiTexCoord2f(0, 1.0f, 1.0f);
+		floorBatch.Vertex3f(100, 0, -100);
+
+		floorBatch.MultiTexCoord2f(0, 0.0f, 1.0f);
+		floorBatch.Vertex3f(-100, 0, -100);
+	floorBatch.End();
+
+
+}
+
+void Game::drawFloor()
+{
+	floorBatch.Begin(GL_QUADS, 4);								// Draw A Quad
+		glVertex3f(-1.0f, 0.0f, 1.0f);				// Top Left
+		glVertex3f( 1.0f, 0.0f, 1.0f);				// Top Right
+		glVertex3f( 1.0f,-0.0f, -1.0f);				// Bottom Right
+		glVertex3f(-1.0f,-0.0f, -1.0f);				// Bottom Left
+	glEnd();
+
+}
+
+
 void Game::placeThem()
 {
 	models[0].mdlFrame.SetOrigin(target->frame.GetOriginX()-5, target->frame.GetOriginY()-5, target->frame.GetOriginZ()+10);
@@ -148,12 +182,14 @@ void Game::Display()
 	static GLfloat vWhiteColor[] = {1.0f,1.0f,1.0f,1.0f};
 	static GLfloat lightColour[] =	{1.0f,1.0f,1.0f};
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+	
 	if(clock() > m_timer+(CLOCKS_PER_SEC/FRAMERATE))
 	{
 		Update();
 		m_timer=clock();
 	}
+
+
 
 	modelViewMatrix.PushMatrix();
 		/*Skybox Code*/
@@ -172,6 +208,7 @@ void Game::Display()
 	
 		modelViewMatrix.PushMatrix(mCamera);
 			//Insert drawing code here
+			drawFloor();
 
 			modelViewMatrix.PushMatrix();
 				modelViewMatrix.MultMatrix(projectile->projectileFrame);
