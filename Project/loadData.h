@@ -22,18 +22,18 @@
 
 using namespace std;
 
-class LoadData
+class CLoadData
 {
 public:
-	static LoadData* GetInstance();
+	static CLoadData* GetInstance();
 	void LoadTXT(char *_fName, vector<GLuint> &_vName); //Load texture filenames from .txt file
 	void LoadUWSM(GLTriangleBatch &_object, char* _fName); //Load models from .uwsm files
 	GLuint LoadTexture(char *_fName, GLuint *_texID); //Load texture
 	//HSAMPLE LoadSample(char* _fName); //Load sounds
 protected:
-	LoadData();
+	CLoadData();
 public:
-	static LoadData*		pLoadData;
+	static CLoadData*		pLoadData;
 };
 
 #endif
