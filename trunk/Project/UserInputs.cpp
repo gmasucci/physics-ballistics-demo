@@ -30,7 +30,7 @@ void UserInputs::rightKey()
 
 void UserInputs::upKey()
 {
-	game->projectile->velocity.zVel=100;
+	game->projectile->velocity.zVel=110;
 	game->projectile->velocity.yVel=20;
 	game->projectile->active=true;
 
@@ -145,5 +145,11 @@ void UserInputs::processNormalKeys(unsigned char key, int x, int y){
 				break;
 			}
 			break;
+	}
+	if(keyOn['l'])
+	{
+		Game *g = g->GetInstance();
+		g->cameraFrame.SetOrigin(g->projectile->projectileFrame.GetOriginX(),g->projectile->projectileFrame.GetOriginY(),g->projectile->projectileFrame.GetOriginZ());
+		g->cameraFrame.RotateLocalX(m3dDegToRad(90));
 	}
 }

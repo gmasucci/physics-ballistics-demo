@@ -22,7 +22,6 @@ SD = sectional density = mass of bullet divided by its caliber in m squared or i
 ie  mass of bullet in pounds or kilograms divided by its caliber squared in inches or meters; units are lb/in2 or kg/m2
 
 i = form factor, i = CB/CG; (CG~ 0.5191)
-					CB is taken as 0.295 for a standard non-ogive bullet fired from a manhandleable weapon
 CB = drag coefficient of the bullet
 CG = drag coefficient of the G1 model bullet
 M = mass of object (lb or kg)
@@ -35,9 +34,6 @@ class Projectile
 public:
 	Projectile(float ix, float iy, float iz);
 	~Projectile(void);
-
-	void setDragCoefficient(double Cg = 0.295)	{	dragCoefficient = Cg;	}
-	double getDragCoeeficient()					{	return dragCoefficient;	}
 
 
 	class Velocity
@@ -58,6 +54,7 @@ public:
 	void init(); // create the projectile
 	void render() {projectileBatch.Draw();} // draws the projectile on screen
 	void move();
+	float getRadius() {return radius;}
 	class Rotation{
 	public:
 		Rotation(bool rotating = false, bool clockwise = false)	{	rotation = rotating;	clockwiseRotation = clockwise;	} 
@@ -74,7 +71,7 @@ public:
 		bool clockwiseRotation;
 	};
 
-	
+	float radius;
 	double mass;					//	measure this in kg
 	double diameter;				//	measure this in meters
 	Velocity velocity;				//	meters per second
@@ -84,7 +81,6 @@ public:
 	double acceleration;			//	m/s/s
 	double ballisticCoefficient;	//	
 	double formFactor;				//  = Cg/Ci  or BC of bullet divided by bc of G1 model bullet (as defined in 1881 by Krupp)
-	double dragCoefficient;			//  individual drag coefficient Cg for a specific bullet
 	/*
 	The Krupp artillery shell was 3 calibers long and had an ogival head with a 2 caliber radius. 
 	(ogival head is one with a secant ogive of sharpness to describe its shape)
@@ -98,7 +94,7 @@ public:
 	This standard Krupp projectile had a rating of 1.0, and Ingalls defined the Ballistic Coefficient 
 	of a bullet as it's ability to overcome air resistance in flight indexed to the Krupp standard reference projectile.
 	*/
-	
+	double dragCoefficient;			//
 
 	//const double CG
 
@@ -119,8 +115,5 @@ public:
 	float y;
 	float z;
 	bool active;
-
-	//  colour representing the velocities in the 3 axis of the projectile
-	float velColour[4];
 };
 

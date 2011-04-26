@@ -10,6 +10,21 @@ Game::Game()
 	//m_scale = 20.0f;
 }
 
+void Game::placeThem()
+{
+	models[0].mdlFrame.SetOrigin(target->frame.GetOriginX()-5, target->frame.GetOriginY()-5, target->frame.GetOriginZ()+10);
+	LoadData::GetInstance()->LoadTXT("textures/md2models.txt", textures);
+	
+}
+
+void Game::cameraInit()
+{
+	cameraFrame.SetOrigin(0.0f,0.0f,100.0f);
+	cameraFrame.SetForwardVector(0.0f, 0.0f, -1.0f);
+	cameraFrame.SetUpVector(0.0f,1.0f,0.0f);
+
+}
+
 Game* Game::GetInstance()
 {
 	if(!pGame)
@@ -50,9 +65,14 @@ void Game::Update()
 		cameraFrame.SetOrigin(projectile->x, projectile->y, projectile->z);
 		M3DVector3f bulletForwardVec;
 		projectile->projectileFrame.GetForwardVector(bulletForwardVec);
-		cameraFrame.SetForwardVector(bulletForwardVec);
+		//cameraFrame.SetForwardVector(bulletForwardVec);
 		cameraFrame.TranslateLocal(0.0f, 0.5f, -10.0f);
+		//cameraFrame.SetForwardVector(projectile->x - cameraFrame.GetOriginX(), projectile->y - cameraFrame.GetOriginY(), projectile->z - cameraFrame.GetOriginZ());
+		
 	}
+	checkCollision();
+	
+
 
 }
 
@@ -62,21 +82,25 @@ void Game::processKeys(unsigned char key, int x, int y)
 	if (key=='a' || key=='A')
 	{
 		cameraFrame.RotateLocalY(0.01);
+		//cameraFrame.TranslateLocal(0.0f, 0.5f, -10.0f);
 		//cameraFrame.MoveRight(-30);
 	}
 	if (key=='d' || key=='D')
 	{
 		cameraFrame.RotateLocalY(-0.01);
+		//cameraFrame.TranslateLocal(0.0f, 0.5f, -10.0f);
 		//cameraFrame.MoveRight(30);
 	}
 	if (key=='w' || key=='W')
 	{
 		cameraFrame.RotateLocalX(0.01);
+		//cameraFrame.TranslateLocal(0.0f, 0.5f, -10.0f);
 		//cameraFrame.MoveUp(30);
 	}
 	if (key=='s' || key=='S')
 	{
 		cameraFrame.RotateLocalX(-0.01);
+		//cameraFrame.TranslateLocal(0.0f, 0.5f, -10.0f);
 		//cameraFrame.MoveUp(-30);
 	}
 	if (key=='q' || key=='Q')
@@ -116,14 +140,13 @@ void Game::checkBullet()
 		projectile=NULL;
 		projectile= new Projectile(0.0f,0.0f,-1.0f);
 		projectile->init();
+		cameraInit();
 	}
 }
 
 void Game::Display()
 {
 	static GLfloat vWhiteColor[] = {1.0f,1.0f,1.0f,1.0f};
-	static GLfloat tempProjCol[]=	{projectile->velColour[0], projectile->velColour[1],projectile->velColour[2], projectile->velColour[3]};
-	cout << "colours: " << projectile->velColour[0] << projectile->velColour[1] << projectile->velColour[2] <<endl;
 	static GLfloat lightColour[] =	{1.0f,1.0f,1.0f};
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -153,9 +176,17 @@ void Game::Display()
 
 			modelViewMatrix.PushMatrix();
 				modelViewMatrix.MultMatrix(projectile->projectileFrame);
-				shaderManager.UseStockShader(GLT_SHADER_POINT_LIGHT_DIFF, transformPipeline.GetModelViewMatrix(),transformPipeline.GetProjectionMatrix(), projectile->velColour/*vWhiteColor*/,lightColour,0);
+				shaderManager.UseStockShader(GLT_SHADER_POINT_LIGHT_DIFF, transformPipeline.GetModelViewMatrix(),transformPipeline.GetProjectionMatrix(),vWhiteColor,lightColour,0);
 				projectile->render();
 			modelViewMatrix.PopMatrix();
+
+			//modelViewMatrix.PushMatrix();
+			//	modelViewMatrix.MultMatrix(models[0].mdlFrame);
+			//	shaderManager.UseStockShader(GLT_SHADER_TEXTURE_REPLACE, transformPipeline.GetModelViewProjectionMatrix(), GLT_ATTRIBUTE_VERTEX);
+			//	glBindTexture(GL_TEXTURE_2D, textures[0]);
+			//	//models[0].Animate(1,1);
+			//	models[0].RenderFrameItp();
+			//modelViewMatrix.PopMatrix();
 
 			modelViewMatrix.PushMatrix();
 				modelViewMatrix.MultMatrix(target->frame);
@@ -182,9 +213,7 @@ void Game::SetupRC()
 	transformPipeline.SetMatrixStacks(modelViewMatrix, projectionMatrix);
 	
 	modelViewMatrix.LoadIdentity();
-	cameraFrame.SetOrigin(0.0f,0.0f,100.0f);
-	cameraFrame.SetForwardVector(0.0f, 0.0f, -1.0f);
-	cameraFrame.SetUpVector(0.0f,1.0f,0.0f);
+	cameraInit();
 	skybox->Init();
 	projectile->init();
 	target->init();
@@ -194,6 +223,8 @@ void Game::SetupRC()
 void Game::Init()
 {
 	//uinputs = new UserInputs();
+	models = new DA::GameModel[10];
+	models[0] = DA::GameModel("models/player.md2");
 	double tpos[]={0,0,-450};
 	double tvel[]={0,0,0};
 	double taccel[]={0,0,0};
@@ -220,6 +251,98 @@ void Game::PlaySound(int sound)
 	{
 		cout << "Can't play sound" << endl;
 	}
+}
+
+void Game::checkCollision()
+{
+	M3DVector3f projectileOrigin;
+	M3DVector3f targetOrigin;
+	projectile->projectileFrame.GetOrigin(projectileOrigin);
+	target->frame.GetOrigin(targetOrigin);
+	float x1 = target->frame.GetOriginX()-target->getWidth();
+	float x2 = target->frame.GetOriginX()+target->getWidth();
+	float y1 = target->frame.GetOriginY()-target->getWidth();
+	float y2 = target->frame.GetOriginY()+target->getWidth();
+	float z1 = target->frame.GetOriginX()-target->getWidth();
+	float z2 = target->frame.GetOriginZ()+target->getWidth();
+
+	float pX = projectile->projectileFrame.GetOriginX();
+	float pY = projectile->projectileFrame.GetOriginY();
+	float pZ = projectile->projectileFrame.GetOriginZ();
+	float tX = target->frame.GetOriginX();
+	float tY = target->frame.GetOriginY();
+	float tZ = target->frame.GetOriginZ();//+target->getWidth();
+	//if(projectile->projectileFrame.GetOriginX <= target->
+	M3DVector3f A = {tX,tY,tZ};
+	M3DVector3f B = {tX+0.1f,tY,tZ};
+	M3DVector3f C = {tX+0.1f,tY+0.1f,tZ};
+
+	M3DVector3f AB;
+	M3DVector3f AC;
+	m3dSubtractVectors3(AB,B,A);
+	m3dSubtractVectors3(AC,C,A);
+
+	if(pX > x1 && pX < x2)
+	{
+		//cout << "Within X " << endl;
+		if(pY < y2 && pX > y1)
+		{
+			M3DVector3f n;
+			m3dCrossProduct3(n,AB,AC);
+			float D = n[0]*(-A[0])+n[1]*(-A[1])+n[2]*(-A[2]);
+			float distance = (n[0]*projectileOrigin[0]+n[1]*projectileOrigin[1]+n[2]*projectileOrigin[2]+D)*(n[0]*projectileOrigin[0]+n[1]*projectileOrigin[1]+n[2]*projectileOrigin[2]+D);
+			distance = distance*distance/((n[0]*n[0]+n[1]*n[1]+n[2]*n[2]));
+			cout << endl << "Distance: " << distance << endl;
+			if(distance<=0.015)//(projectile->getRadius()*projectile->getRadius()))
+				projectile->velocity.zVel=projectile->velocity.yVel=projectile->velocity.xVel=0.0f;
+				//cout << "Collision lololololol" << endl;
+
+		}
+	}
+	//M3DVector3f A = {x1,y2,z2};
+	//M3DVector3f B = {x2,y2,z2};
+	//M3DVector3f C = {x1,y1,z2};
+
+	//M3DVector3f AB;
+	//M3DVector3f AC;
+	//m3dSubtractVectors3(AB,B,A);
+	//m3dSubtractVectors3(AC,C,A);
+
+	//M3DVector3f n;
+	//m3dCrossProduct3(n,AB,AC);
+	//float D = n[0]*(-A[0])+n[1]*(-A[1])+n[2]*(-A[2]);
+	//float distance = (n[0]*projectileOrigin[0]+n[1]*projectileOrigin[1]+n[2]*projectileOrigin[2])*(n[0]*projectileOrigin[0]+n[1]*projectileOrigin[1]+n[2]*projectileOrigin[2]);
+	//distance = distance/(sqrt(n[0]*n[0]+n[1]*n[1]+n[2]*n[2]));
+	//cout << endl << "Distance: " << distance << endl;
+	//if(distance<projectile->getRadius()+target->getWidth())
+	//	cout << "Collision lololololol" << endl;
+
+
+
+	//cout << endl << m3dGetDistance3(projectileOrigin,targetOrigin) << endl;
+	//if(m3dGetDistance3(projectileOrigin,targetOrigin) < target->getWidth()+projectile->getRadius())
+	//{
+	//	projectile->velocity.xVel=0.0;
+	//	projectile->velocity.yVel=0.0;
+	//	projectile->velocity.zVel=0.0;
+	//}
+
+	//if(pX > x1 && pX < x2)
+	//{
+	//	//cout << "Within X " << endl;
+	//	if(pY < y2 && pX > y1)
+	//	{
+	//		//cout << "Within Y " << endl;
+	//		M3DVector3f temp={pX,pY,tZ};
+	//		cout << m3dGetDistance3(temp,projectileOrigin) << endl;
+	//		if(m3dGetDistance3(temp,projectileOrigin)<projectile->getRadius())
+	//		//if(pZ >z1 && pZ < z2)
+	//		//{
+	//			cout << "Collision " << endl;
+	//		//}
+	//	}
+	//}
+
 }
 
 HSAMPLE Game::LoadSample(char *fName)

@@ -7,7 +7,7 @@ class Target
 {
 public:
 	Target(void)	{
-		mass =	1.0; energy = 0; 
+		mass =	1.0; energy = 0; width = 2.5;
 		acceleration[0]=0;	acceleration[1]=0;	acceleration[2]=0;
 		velocity[0]=0;		velocity[1]=0;		velocity[2]=0;
 		startPos[0]=0;		startPos[1]=0;		startPos[2]=0;
@@ -24,6 +24,7 @@ public:
 		startPos[0]		=	iposx;
 		startPos[1]		=	iposy;
 		startPos[2]		=	iposz;
+		width = 2.5;
 	}
 	Target(double imass, double ienergy, double iaccel[], double ivel[], double ipos[]){
 		mass	=	imass;
@@ -34,10 +35,11 @@ public:
 			velocity[i]		=	ivel[i];
 			startPos[i]		=	ipos[i];
 		}
+		width = 2.5;
 
 	}
 	~Target(void)	{
-		mass = 0 ; energy = 0;
+		mass = 0 ; energy = 0; width = 0;
 		delete[] acceleration; 
 		delete[] velocity; 
 		delete[] startPos;
@@ -50,6 +52,7 @@ public:
 	double* getAcceleration()	{	return acceleration;	}
 	double* getVel()			{	return velocity;		}
 	double* getPos()			{	return startPos;		}
+	float getWidth()			{	return width;			}
 	//	mutators
 	void setMass(double imass)											{	mass = imass;																}
 	void setEnergy(double iEnergy)										{	energy = iEnergy;															}
@@ -72,6 +75,7 @@ private:
 	double acceleration[3];
 	double velocity[3];
 	double startPos[3];
+	float width;
 	GLBatch batch;
 	
 };
