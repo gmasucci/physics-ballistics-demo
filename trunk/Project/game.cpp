@@ -10,55 +10,6 @@ Game::Game()
 	//m_scale = 20.0f;
 }
 
-void Game::initFloor()
-{
-	GLfloat x = 5.0f;
-    GLfloat y = -1.0f;
-
-	floorBatch.Begin(GL_TRIANGLE_FAN, 4, 1);
-		floorBatch.MultiTexCoord2f(0, 0.0f, 0.0f);
-		floorBatch.Vertex3f(-100, 0, 100);
-
-		floorBatch.MultiTexCoord2f(0, 1.0f, 0.0f);
-		floorBatch.Vertex3f(100, 0, 100);
-
-		floorBatch.MultiTexCoord2f(0, 1.0f, 1.0f);
-		floorBatch.Vertex3f(100, 0, -100);
-
-		floorBatch.MultiTexCoord2f(0, 0.0f, 1.0f);
-		floorBatch.Vertex3f(-100, 0, -100);
-	floorBatch.End();
-
-
-}
-
-void Game::drawFloor()
-{
-	floorBatch.Begin(GL_QUADS, 4);								// Draw A Quad
-		glVertex3f(-1.0f, 0.0f, 1.0f);				// Top Left
-		glVertex3f( 1.0f, 0.0f, 1.0f);				// Top Right
-		glVertex3f( 1.0f,-0.0f, -1.0f);				// Bottom Right
-		glVertex3f(-1.0f,-0.0f, -1.0f);				// Bottom Left
-	glEnd();
-
-}
-
-
-void Game::placeThem()
-{
-	models[0].mdlFrame.SetOrigin(target->frame.GetOriginX()-5, target->frame.GetOriginY()-5, target->frame.GetOriginZ()+10);
-	LoadData::GetInstance()->LoadTXT("textures/md2models.txt", textures);
-	
-}
-
-void Game::cameraInit()
-{
-	cameraFrame.SetOrigin(0.0f,0.0f,100.0f);
-	cameraFrame.SetForwardVector(0.0f, 0.0f, -1.0f);
-	cameraFrame.SetUpVector(0.0f,1.0f,0.0f);
-
-}
-
 Game* Game::GetInstance()
 {
 	if(!pGame)
@@ -99,13 +50,9 @@ void Game::Update()
 		cameraFrame.SetOrigin(projectile->x, projectile->y, projectile->z);
 		M3DVector3f bulletForwardVec;
 		projectile->projectileFrame.GetForwardVector(bulletForwardVec);
-		//cameraFrame.SetForwardVector(bulletForwardVec);
+		cameraFrame.SetForwardVector(bulletForwardVec);
 		cameraFrame.TranslateLocal(0.0f, 0.5f, -10.0f);
-		//cameraFrame.SetForwardVector(projectile->x - cameraFrame.GetOriginX(), projectile->y - cameraFrame.GetOriginY(), projectile->z - cameraFrame.GetOriginZ());
-		
 	}
-	
-
 
 }
 
@@ -115,25 +62,21 @@ void Game::processKeys(unsigned char key, int x, int y)
 	if (key=='a' || key=='A')
 	{
 		cameraFrame.RotateLocalY(0.01);
-		//cameraFrame.TranslateLocal(0.0f, 0.5f, -10.0f);
 		//cameraFrame.MoveRight(-30);
 	}
 	if (key=='d' || key=='D')
 	{
 		cameraFrame.RotateLocalY(-0.01);
-		//cameraFrame.TranslateLocal(0.0f, 0.5f, -10.0f);
 		//cameraFrame.MoveRight(30);
 	}
 	if (key=='w' || key=='W')
 	{
 		cameraFrame.RotateLocalX(0.01);
-		//cameraFrame.TranslateLocal(0.0f, 0.5f, -10.0f);
 		//cameraFrame.MoveUp(30);
 	}
 	if (key=='s' || key=='S')
 	{
 		cameraFrame.RotateLocalX(-0.01);
-		//cameraFrame.TranslateLocal(0.0f, 0.5f, -10.0f);
 		//cameraFrame.MoveUp(-30);
 	}
 	if (key=='q' || key=='Q')
@@ -173,23 +116,22 @@ void Game::checkBullet()
 		projectile=NULL;
 		projectile= new Projectile(0.0f,0.0f,-1.0f);
 		projectile->init();
-		cameraInit();
 	}
 }
 
 void Game::Display()
 {
 	static GLfloat vWhiteColor[] = {1.0f,1.0f,1.0f,1.0f};
+	static GLfloat tempProjCol[]=	{projectile->velColour[0], projectile->velColour[1],projectile->velColour[2], projectile->velColour[3]};
+	cout << "colours: " << projectile->velColour[0] << projectile->velColour[1] << projectile->velColour[2] <<endl;
 	static GLfloat lightColour[] =	{1.0f,1.0f,1.0f};
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
+
 	if(clock() > m_timer+(CLOCKS_PER_SEC/FRAMERATE))
 	{
 		Update();
 		m_timer=clock();
 	}
-
-
 
 	modelViewMatrix.PushMatrix();
 		/*Skybox Code*/
@@ -208,21 +150,12 @@ void Game::Display()
 	
 		modelViewMatrix.PushMatrix(mCamera);
 			//Insert drawing code here
-			drawFloor();
 
 			modelViewMatrix.PushMatrix();
 				modelViewMatrix.MultMatrix(projectile->projectileFrame);
-				shaderManager.UseStockShader(GLT_SHADER_POINT_LIGHT_DIFF, transformPipeline.GetModelViewMatrix(),transformPipeline.GetProjectionMatrix(),vWhiteColor,lightColour,0);
+				shaderManager.UseStockShader(GLT_SHADER_POINT_LIGHT_DIFF, transformPipeline.GetModelViewMatrix(),transformPipeline.GetProjectionMatrix(), projectile->velColour/*vWhiteColor*/,lightColour,0);
 				projectile->render();
 			modelViewMatrix.PopMatrix();
-
-			//modelViewMatrix.PushMatrix();
-			//	modelViewMatrix.MultMatrix(models[0].mdlFrame);
-			//	shaderManager.UseStockShader(GLT_SHADER_TEXTURE_REPLACE, transformPipeline.GetModelViewProjectionMatrix(), GLT_ATTRIBUTE_VERTEX);
-			//	glBindTexture(GL_TEXTURE_2D, textures[0]);
-			//	//models[0].Animate(1,1);
-			//	models[0].RenderFrameItp();
-			//modelViewMatrix.PopMatrix();
 
 			modelViewMatrix.PushMatrix();
 				modelViewMatrix.MultMatrix(target->frame);
@@ -249,7 +182,9 @@ void Game::SetupRC()
 	transformPipeline.SetMatrixStacks(modelViewMatrix, projectionMatrix);
 	
 	modelViewMatrix.LoadIdentity();
-	cameraInit();
+	cameraFrame.SetOrigin(0.0f,0.0f,100.0f);
+	cameraFrame.SetForwardVector(0.0f, 0.0f, -1.0f);
+	cameraFrame.SetUpVector(0.0f,1.0f,0.0f);
 	skybox->Init();
 	projectile->init();
 	target->init();
@@ -259,8 +194,6 @@ void Game::SetupRC()
 void Game::Init()
 {
 	//uinputs = new UserInputs();
-	models = new DA::GameModel[10];
-	models[0] = DA::GameModel("models/player.md2");
 	double tpos[]={0,0,-450};
 	double tvel[]={0,0,0};
 	double taccel[]={0,0,0};

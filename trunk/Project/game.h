@@ -11,16 +11,11 @@
 #include <GLMatrixStack.h>
 #include <GLShaderManager.h>
 #include <GLGeometryTransform.h>
-#include <GLBatch.h>
-#include "GameModel.h"
 #include "skybox.h"
 #include "bass.h"
 #include "Projectile.h"
 #include "UserInputs.h"
 #include "Target.h"
-
-#include "loadData.h"
-
 #include <time.h>
 
 #define game Game::GetInstance()
@@ -55,7 +50,6 @@ private:
 	GLMatrixStack		projectionMatrix;
 	GLShaderManager		shaderManager;
 	GLGeometryTransform	transformPipeline;
-
 public:
 	GLFrame				cameraFrame;
 	M3DMatrix44f		mCamera;
@@ -64,23 +58,11 @@ public:
 	HSAMPLE				*samples;
 	Projectile			*projectile;
 	Target				*target;
-	DA::GameModel		*models;
 
 	clock_t				m_timer;
 	UserInputs			*uinputs;
 	//float				m_updateRate;
 	//float				m_scale;
-
-private:
-	void cameraInit();
-	void placeThem();
-public:
-	vector<unsigned int> textures;
-private:
-	void drawFloor();
-	void initFloor();
-	GLBatch floorBatch;
-
 
 };
 

@@ -13,19 +13,19 @@
 #include <stdio.h>
 using namespace std;
 
-LoadData* LoadData::pLoadData = NULL;
+CLoadData* CLoadData::pLoadData = 0;
 
-LoadData* LoadData::GetInstance()
+CLoadData* CLoadData::GetInstance()
 {
 		if(!pLoadData)
-			pLoadData = new LoadData;			
+			pLoadData = new CLoadData;			
 		return pLoadData;
 }
-LoadData::LoadData()
+CLoadData::CLoadData()
 {
 }
 
-void LoadData::LoadUWSM(GLTriangleBatch &_object, char *_fName)
+void CLoadData::LoadUWSM(GLTriangleBatch &_object, char *_fName)
 {	
 	ifstream::pos_type size;
 	char *_memblock;
@@ -113,7 +113,7 @@ void LoadData::LoadUWSM(GLTriangleBatch &_object, char *_fName)
 	delete [] uv;
 }
 
-GLuint LoadData::LoadTexture(char *_fName, GLuint *_texID)
+GLuint CLoadData::LoadTexture(char *_fName, GLuint *_texID)
 {
 	//Generate texture ID
 	glGenTextures(1, _texID);
@@ -142,7 +142,7 @@ GLuint LoadData::LoadTexture(char *_fName, GLuint *_texID)
 }
 
 
-void LoadData::LoadTXT(char *_fName, std::vector<GLuint> &_vName) /*This function will read a txt file,line by line, and add the file names to the vector*/
+void CLoadData::LoadTXT(char *_fName, std::vector<GLuint> &_vName) /*This function will read a txt file,line by line, and add the file names to the vector*/
 {
 	ifstream _textureFile (_fName);
 	if(_textureFile.is_open())
@@ -163,7 +163,7 @@ void LoadData::LoadTXT(char *_fName, std::vector<GLuint> &_vName) /*This functio
 	}
 }
 
-//HSAMPLE LoadData::LoadSample(char *_fName) /* Function will load a sound sample */
+//HSAMPLE CLoadData::LoadSample(char *_fName) /* Function will load a sound sample */
 //{
 //	HSAMPLE _sam;
 //	if(_sam = BASS_SampleLoad(FALSE,_fName,0,0,3,BASS_SAMPLE_OVER_POS))
