@@ -2,14 +2,14 @@
 #include "Projectile.h"
 #include "Physx.h"
 #include "loadData.h"
-#include "md2model.h"
+//#include "md2model.h"
 #include <GLTools.h>
 #define FREEGLUT_STATIC
 #include <GL/freeglut.h>
 
 
 
-md2model model;
+//md2model model;
 
 void Reshape(int w, int h)
 {

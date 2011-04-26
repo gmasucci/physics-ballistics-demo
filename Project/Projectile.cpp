@@ -9,8 +9,7 @@ Projectile::Projectile(float ix, float iy, float iz)
 	y=iy;
 	z=iz;
 	active=false;
-	dragCoefficient = 0.295;
- 
+	radius=0.3f;
 }
 
 
@@ -22,23 +21,24 @@ void Projectile::init()
 {
 	if (Dbg)
 		cout << "INIT CALLED" << endl;
-	gltMakeSphere(projectileBatch,0.3f,13,22);
+	gltMakeSphere(projectileBatch,radius,13,22);
 	projectileFrame.SetOrigin(x,y,z);
-	for (int colouriterator=0; colouriterator<4;colouriterator++)
-	{
-		this->velColour[colouriterator] = 1.0f;
-	}
 }
 
 void Projectile::move()
 {
-	cout << velocity.yVel << endl;
+	for (int i = 0; i<32; i++)
+			cout << "\b \b";
+	cout << velocity.yVel;
 	if(active)
 	{
 		projectileFrame.MoveForward(velocity.zVel/FRAMERATE);
 		projectileFrame.MoveUp(velocity.yVel/FRAMERATE);
 		velocity.yVel=velocity.yVel + (GRAVITY/FRAMERATE);
-		cout << velocity.yVel << endl;
+
+		/*for (int i = 0; i<32; i++)
+			cout << "\b \b";
+		cout << velocity.yVel;
 		if (projectileFrame.GetOriginY() <= -5)
 		{
 			velocity.yVel*=-1;
@@ -46,14 +46,10 @@ void Projectile::move()
 		}
 		projectileFrame.MoveRight(velocity.xVel/FRAMERATE);
 		if (projectileFrame.GetOriginX()>=35*(800/600) || projectileFrame.GetOriginX()<= -35*(800/600))
-			velocity.xVel*=-1;
+			velocity.xVel*=-1;*/
 
 	}
-	velColour[0]=1.0-((this->velocity.xVel/FRAMERATE) *0.01) + ((this->velocity.yVel/FRAMERATE) *0.01) + ((this->velocity.zVel/FRAMERATE) *0.01);
-	velColour[1]=0.0;//+((this->velocity.yVel/FRAMERATE) *0.01);
-	velColour[2]=0.0;//+((this->velocity.zVel/FRAMERATE) *0.01);
-	velColour[3]=1.0f;
-	cout << velocity.yVel << endl;
+	//cout << velocity.yVel << endl;
 }
 
 
