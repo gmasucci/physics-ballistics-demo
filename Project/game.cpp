@@ -19,7 +19,7 @@ void Game::placeThem()
 
 void Game::cameraInit()
 {
-	cameraFrame.SetOrigin(0.0f,0.0f,100.0f);
+	cameraFrame.SetOrigin(0.0f,0.0f,20.0f);
 	cameraFrame.SetForwardVector(0.0f, 0.0f, -1.0f);
 	cameraFrame.SetUpVector(0.0f,1.0f,0.0f);
 
@@ -68,9 +68,11 @@ void Game::Update()
 		//cameraFrame.SetForwardVector(bulletForwardVec);
 		cameraFrame.TranslateLocal(0.0f, 0.5f, -10.0f);
 		//cameraFrame.SetForwardVector(projectile->x - cameraFrame.GetOriginX(), projectile->y - cameraFrame.GetOriginY(), projectile->z - cameraFrame.GetOriginZ());
-		
+		checkCollision();
 	}
-	checkCollision();
+
+	target->move();
+	
 	
 
 
@@ -293,8 +295,11 @@ void Game::checkCollision()
 			float distance = (n[0]*projectileOrigin[0]+n[1]*projectileOrigin[1]+n[2]*projectileOrigin[2]+D)*(n[0]*projectileOrigin[0]+n[1]*projectileOrigin[1]+n[2]*projectileOrigin[2]+D);
 			distance = distance*distance/((n[0]*n[0]+n[1]*n[1]+n[2]*n[2]));
 			cout << endl << "Distance: " << distance << endl;
-			if(distance<=0.015)//(projectile->getRadius()*projectile->getRadius()))
+			if(distance<=(projectile->getRadius()*projectile->getRadius()))
+			{
+				target->collision(projectile);
 				projectile->velocity.zVel=projectile->velocity.yVel=projectile->velocity.xVel=0.0f;
+			}
 				//cout << "Collision lololololol" << endl;
 
 		}

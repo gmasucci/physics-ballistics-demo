@@ -10,6 +10,7 @@ Projectile::Projectile(float ix, float iy, float iz)
 	z=iz;
 	active=false;
 	radius=0.3f;
+	mass=0.01;
 }
 
 

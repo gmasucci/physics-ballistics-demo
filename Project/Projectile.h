@@ -55,6 +55,7 @@ public:
 	void render() {projectileBatch.Draw();} // draws the projectile on screen
 	void move();
 	float getRadius() {return radius;}
+	double getMass() { return mass; }
 	class Rotation{
 	public:
 		Rotation(bool rotating = false, bool clockwise = false)	{	rotation = rotating;	clockwiseRotation = clockwise;	} 
