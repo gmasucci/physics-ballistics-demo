@@ -2,6 +2,7 @@
 #include <GLTools.h>
 #include <GLBatch.h>
 #include <GLFrame.h>
+#include "Projectile.h"
 
 class Target
 {
@@ -61,10 +62,12 @@ public:
 	void setPos(double ix, double iy, double iz)						{	startPos[0]=ix; startPos[1]=iy; startPos[2]=iz;								}
 	void setAcceleration();
 	void setVelocity();
+	void collision(Projectile *p);
 
 	//	general functions
 	void render();
 	void init();
+	void move();
 
 	//	public data members
 	GLFrame frame;
